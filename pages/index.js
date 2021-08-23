@@ -3,13 +3,13 @@ import Image from 'next/image'
 //import styles from '../styles/Home.module.css'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { useState, setState, useEffect } from 'react'
+import React, { useState, setState, useEffect } from 'react'
 import Speech from 'speak-tts'
 import useWindowDimensions from './windowHelper.js'
 import { StyleSheet, css } from 'aphrodite';
 //import icon from '/thumbs_up.svg'
 
-const ThumbsAnimation = (props) => {
+const ThumbsAnimation = React.memo(props => {
   const items = [...Array(props.number)];
   const { width, height } = useWindowDimensions();
 
@@ -47,7 +47,7 @@ const ThumbsAnimation = (props) => {
       }
     </>
   )
-}
+})
 export default function Home() {
   const url = "https://random-word-api.herokuapp.com/";
   const choices = ["all", "word"]
@@ -61,21 +61,6 @@ export default function Home() {
   const { height, width } = useWindowDimensions()
   const [showThumbs, setShowThumbs] = useState(false);
 
-  const calculatePos = (imageSize, vh) => {
-    let max = 100 - 100 * imageSize / (vh ? height : width)
-    var num = Math.random() * (max);
-    return Math.floor(num);
-  }
-  const thumbsAnimation = (size) => {
-    return (
-      {
-        //top: calculatePos(size, true) + "vh",
-        //left: calculatePos(size, false) + "vw",
-        //transform: 'rotate(' + (Math.floor(Math.random() * 360) - 180) + 'deg)',
-        //transform: `rotate(${Math.floor(Math.random()*360) - 180}deg) scale(${Math.random()*3})`
-      }
-    )
-  }
   const speakWord = (wordToSpeak) => {
     const speech = new Speech(); // will throw an exception if not browser supported
     speech.init({
@@ -122,17 +107,10 @@ export default function Home() {
 
   const animate = () => {
     setShowThumbs(true);
-    //let circles = document.querySelectorAll('.circle-container');
-    //circles.forEach((element) => {
-      //element.animate([{ opacity: 0  }], {
-        //delay: 500,
-        //duration: 4000,
-        //iterations: 4,
-      //})
-    //})
+
     setInterval(() => {
       setShowThumbs(false);
-    }, 5000)
+    }, 3000)
     
   }
 

@@ -18,7 +18,7 @@
   }
   .circle-container:nth-child(#{$i}){
     opacity: random(100)/100;
-    animation: t-#{$i} 3s infinite alternate;
+    animation: t-#{$i} 3s;
         //left: calc(#{random(100)} * (1% - #{$size}));
     //top: calc(#{random(100)} * (1% - #{$size})); 
   }
