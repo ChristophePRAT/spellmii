@@ -1,0 +1,49 @@
+.circle-container {
+  position: absolute;
+}
+
+@for $i from 0 through 10 {
+  //@keyframes thumbs-#{$i} {
+    //to {
+      //top: 0;
+      //left: random(90) + vw;
+      //transform: rotate(random(360) - 180 + deg) scale(random(30)/10);
+    //}
+  //}
+  //
+  @keyframes t-#{$i} {
+    to {
+      transform: rotate((random(360) - 180) + deg) scale(random(30)/10);
+    }
+  }
+  .circle-container:nth-child(#{$i}){
+    opacity: random(100)/100;
+    animation: t-#{$i} 3s infinite alternate;
+        //left: calc(#{random(100)} * (1% - #{$size}));
+    //top: calc(#{random(100)} * (1% - #{$size})); 
+  }
+}
+#thumbs.success {
+   filter: invert(75%) sepia(60%) saturate(7388%) hue-rotate(91deg) brightness(125%) contrast(122%);
+}
+#thumbs.failure {
+   filter: invert(24%) sepia(85%) saturate(7446%) hue-rotate(358deg) brightness(102%) contrast(123%);
+   .circle-container {
+     transform: rotate(180deg);
+   }
+}
+html, body {
+  width:100%; 
+  height:100%; 
+  margin:0;
+}
+.thumbsContainer {
+  width: 100%;
+  height: 100%;
+}
+footer {
+  size: 10px;
+  position: absolute;
+  bottom: 0;
+}
+

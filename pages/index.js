@@ -1,18 +1,53 @@
 import Head from 'next/head'
 import Image from 'next/image'
 //import styles from '../styles/Home.module.css'
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 import { useState, setState, useEffect } from 'react'
 import Speech from 'speak-tts'
-import { bounce } from 'react-animations'
+import useWindowDimensions from './windowHelper.js'
 import { StyleSheet, css } from 'aphrodite';
+//import icon from '/thumbs_up.svg'
 
-const styles = StyleSheet.create({
-  bounce: {
-    animationName: bounce,
-    animationDuration: '1s'
+const ThumbsAnimation = (props) => {
+  const items = [...Array(props.number)];
+  const { width, height } = useWindowDimensions();
+
+  const calculatePos = (imageSize, vh) => {
+    let max = 100 - 100 * imageSize / (vh ? height : width)
+    var num = Math.random() * (max);
+    return Math.floor(num);
   }
-})
 
+  const styles = (size) => {
+    return(
+      {
+        top: calculatePos(size, true) + "vh",
+        left: calculatePos(size, false) + "vw",
+      }
+    )
+  }
+
+  const circles = items.map(item => {
+    // Size of the thumbs up image
+    const size = Math.floor(Math.random() * 30) + 20;
+    return (
+      <div style={
+        // Calculate the position of the thumbs up. (randomly generated)
+        styles(size)
+        } className="circle-container">
+        <img width={size + "px"} height={size + "px"} src="/thumbs_up.svg" />
+      </div>
+    )
+  });
+  return (
+    <>
+      {
+        circles
+      }
+    </>
+  )
+}
 export default function Home() {
   const url = "https://random-word-api.herokuapp.com/";
   const choices = ["all", "word"]
@@ -23,7 +58,24 @@ export default function Home() {
   const [score, setScore] = useState(0);
   const [tries, setTries] = useState(1);
   const [isRight, setIsRight] = useState(false);
+  const { height, width } = useWindowDimensions()
+  const [showThumbs, setShowThumbs] = useState(false);
 
+  const calculatePos = (imageSize, vh) => {
+    let max = 100 - 100 * imageSize / (vh ? height : width)
+    var num = Math.random() * (max);
+    return Math.floor(num);
+  }
+  const thumbsAnimation = (size) => {
+    return (
+      {
+        //top: calculatePos(size, true) + "vh",
+        //left: calculatePos(size, false) + "vw",
+        //transform: 'rotate(' + (Math.floor(Math.random() * 360) - 180) + 'deg)',
+        //transform: `rotate(${Math.floor(Math.random()*360) - 180}deg) scale(${Math.random()*3})`
+      }
+    )
+  }
   const speakWord = (wordToSpeak) => {
     const speech = new Speech(); // will throw an exception if not browser supported
     speech.init({
@@ -67,17 +119,38 @@ export default function Home() {
     setScore(0);
     setTries(1);
   }
+
+  const animate = () => {
+    setShowThumbs(true);
+    //let circles = document.querySelectorAll('.circle-container');
+    //circles.forEach((element) => {
+      //element.animate([{ opacity: 0  }], {
+        //delay: 500,
+        //duration: 4000,
+        //iterations: 4,
+      //})
+    //})
+    setInterval(() => {
+      setShowThumbs(false);
+    }, 5000)
+    
+  }
+
   useEffect(() => {
-    if (word == prediction) {
-      setScore(score + 1);
-      setIsRight(true);
-    } else {
-      setIsRight(false);
-    } 
+    if (word != "") {
+      if (word == prediction) {
+        setScore(score + 1);
+        setIsRight(true);
+      } else {
+        setIsRight(false);
+      }
+      console.log(isRight)
+      animate();
+    }
     setPreviousWord(word);
 
     setPrediction("");
-    if (tries < 10) { 
+    if (tries <= 10) { 
       fetchWord();    
     }
   }, [tries]);
@@ -86,31 +159,47 @@ export default function Home() {
       <Head>
         <title>Spell Mii</title>
       </Head>
-      {
+      { showThumbs ? <div className={"thumbscontainer " + (isRight ? "success" : "failure")} id="thumbs"> <ThumbsAnimation number={10} />
+      </div>: null }
+             
 
-        tries > 10 ? <button onClick={tryAgain}>Try again</button> : <>
-          <h1>
-            Spell the word
-          </h1>
-          <h2>
-            Round {tries}
-          </h2>
-          <form onSubmit={handleSubmit}>
-            <input type="text" value={prediction} onChange={handleChange} />
-            <input type="submit" value="Submit" />
-            <input type="button" value="Repeat" onClick={() => speakWord(word)} />
-          </form>
-          { previousWord == "" ? null : 
-          <p className={isRight ? '' : css(styles.bounce)}>
-            {isRight ? "Correct!" : "Wrong!"} Previous word was <b>{previousWord}</b>
-          </p>
-          }
-        </>
+      <center>
+        {
 
-      }
-      <p>
-        {score} / 10
-      </p>
+          tries > 10 ? <Button onClick={tryAgain}>Try again</Button> : <>
+            <h1>
+              Spell the word
+            </h1>
+            <h2>
+              Round {tries}
+            </h2>
+
+            <Form onSubmit={handleSubmit}> 
+              <Form.Control type="text" value={prediction} onChange={handleChange} disabled={showThumbs} className="mb-3 w-25" />
+              <Button type="submit" className="m-3" variant="success">
+                Submit
+              </Button>
+              <Button onClick={() => speakWord(word)} className="m-3" variant="light">
+                Repeat
+              </Button>
+            </Form>
+            { previousWord == "" ? null : 
+            <p className={"text-light p-3 rounded d-inline-block " + (isRight ? "bg-success" : "bg-danger")}> 
+              {isRight ? "Correct!" : "Wrong!"} Previous word was <b>{previousWord}</b>
+            </p>
+            }
+          </>
+
+        }
+        <h2 className="monospace">
+          {score} / 10
+        </h2>
+      </center>
+      <footer>
+        <a href='https://dryicons.com/free-icons/thumbs-up'> Icon by Dryicons </a>
+      </footer>
     </>
   )
 }
+
+
