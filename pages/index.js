@@ -5,12 +5,12 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import React, { useState, setState, useEffect } from 'react'
 import Speech from 'speak-tts'
-import useWindowDimensions from './windowHelper.js'
+import useWindowDimensions from './api/windowHelper.js'
 import { StyleSheet, css } from 'aphrodite';
 //import icon from '/thumbs_up.svg'
 
 const ThumbsAnimation = React.memo(props => {
-  const items = [...Array(props.number)];
+  const items = [...Array(props.number)].map((s, idx) => idx);
   const { width, height } = useWindowDimensions();
 
   const calculatePos = (imageSize, vh) => {
@@ -32,7 +32,7 @@ const ThumbsAnimation = React.memo(props => {
     // Size of the thumbs up image
     const size = Math.floor(Math.random() * 30) + 20;
     return (
-      <div style={
+      <div key={item} style={
         // Calculate the position of the thumbs up. (randomly generated)
         styles(size)
         } className="circle-container">
@@ -48,6 +48,7 @@ const ThumbsAnimation = React.memo(props => {
     </>
   )
 })
+ThumbsAnimation.displayName = "ThumbsAnimation"
 export default function Home() {
   const url = "https://random-word-api.herokuapp.com/";
   const choices = ["all", "word"]
