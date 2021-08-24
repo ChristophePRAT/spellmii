@@ -6,8 +6,6 @@ import Form from 'react-bootstrap/Form';
 import React, { useState, setState, useEffect } from 'react'
 import Speech from 'speak-tts'
 import useWindowDimensions from './api/windowHelper.js'
-import { StyleSheet, css } from 'aphrodite';
-//import icon from '/thumbs_up.svg'
 
 const ThumbsAnimation = React.memo(props => {
   const items = [...Array(props.number)].map((s, idx) => idx);
@@ -49,6 +47,7 @@ const ThumbsAnimation = React.memo(props => {
   )
 })
 ThumbsAnimation.displayName = "ThumbsAnimation"
+
 export default function Home() {
   const url = "https://random-word-api.herokuapp.com/";
   const choices = ["all", "word"]
@@ -62,25 +61,46 @@ export default function Home() {
   const { height, width } = useWindowDimensions()
   const [showThumbs, setShowThumbs] = useState(false);
 
+  //const { data, error } = useSWR('/api/gtts', fetcher)
+
   const speakWord = (wordToSpeak) => {
-    const speech = new Speech(); // will throw an exception if not browser supported
-    speech.init({
-      'volume': 1,
-      'lang': 'en-US',
-      'listeners': {
-        'onvoiceschanged': (voices) => {
-          console.log("Event voiceschanged", voices)
-        }
-      }
-    });
-    speech.speak({
-      text: wordToSpeak,
-      queue: false, // current speech will be interrupted,
-    }).then(() => {
-      console.log("Success !")
-    }).catch(e => {
-      console.error("An error occurred :", e)
-    });
+    fetch("/api/" + wordToSpeak)
+      .then(data => data.text())
+      .then((data) => {
+        let snd = new Audio("data:audio/wav;base64," + data)
+        snd.play()
+      })
+
+    //googleTTS
+    //.getAudioBase64(wordToSpeak, {
+    //lang: "en",
+    //slow: false,
+    //host: 'https://translate.google.com',
+    //timeout: 10000,
+    //})
+    //.then((data) => {
+    //let snd = new Audio(data);
+    //snd.play();
+    //})
+    //.catch(console.error)
+    //const speech = new Speech(); // will throw an exception if not browser supported
+    //speech.init({
+    //'volume': 1,
+    //'lang': 'en-US',
+    //'listeners': {
+    //'onvoiceschanged': (voices) => {
+    //console.log("Event voiceschanged", voices)
+    //}
+    //}
+    //});
+    //speech.speak({
+    //text: wordToSpeak,
+    //queue: false, // current speech will be interrupted,
+    //}).then(() => {
+    //console.log("Success !")
+    //}).catch(e => {
+    //console.error("An error occurred :", e)
+    //});
   }
   const fetchWord = () => {
     const fullURL = url + choices[1]
@@ -112,7 +132,7 @@ export default function Home() {
     setInterval(() => {
       setShowThumbs(false);
     }, 3000)
-    
+
   }
 
   useEffect(() => {
@@ -140,7 +160,7 @@ export default function Home() {
       </Head>
       { showThumbs ? <div className={"thumbscontainer " + (isRight ? "success" : "failure")} id="thumbs"> <ThumbsAnimation number={10} />
       </div>: null }
-             
+
 
       <center>
         {
@@ -149,6 +169,8 @@ export default function Home() {
             <h1>
               Spell the word
             </h1>
+            <p>
+              Listen to the word that's being spoken, then transcribe it. If you haven't heard it, you can click on the repeat button</p>
             <h2>
               Round {tries}
             </h2>
