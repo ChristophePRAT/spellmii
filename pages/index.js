@@ -170,7 +170,8 @@ export default function Home() {
               Spell the word
             </h1>
             <p>
-              Listen to the word that's being spoken, then transcribe it. If you haven't heard it, you can click on the repeat button</p>
+              Listen to the word that is being spoken, then transcribe it. If you have not heard it, you can click on the repeat button
+            </p>
             <h2>
               Round {tries}
             </h2>
