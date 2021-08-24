@@ -1,6 +1,6 @@
 import * as googleTTS from 'google-tts-api';
 import Cors from 'cors'
-import initMiddleware from '../../../lib/init-middleware'
+import initMiddleware from './init-middleware'
 //import { useRouter } from 'next/router'
 // Initialize the cors middleware
 const cors = initMiddleware(
